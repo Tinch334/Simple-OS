@@ -1,10 +1,6 @@
 #include "kernel.h"
 #include "common.h"
 
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef uint32_t size_t;
-
 //Get linker symbols, this gets us the address of those symbols.
 extern char __bss[], __bss_end[], __stack_top[];
 
@@ -33,21 +29,12 @@ void putchar(const char ch) {
     sbi_call(ch, 0, 0, 0, 0, 0, 0, 1);
 }
 
-void *memset(void *buf, char c, size_t n) {
-    //Cast to "uint8_t", so incrementing p advances trough buffer on byte at a time.
-    uint8_t *p = (uint8_t *) buf;
-
-    while(n--) {
-        *p++ = c;
-    }
-    return buf;
-}
-
 void kernel_main(void) {
     printf("\n\nHello %s\n", "World!");
     printf("1 + 2 = %d, %x\n", 1 + 2, 0x1234abcd);
 
     for (;;) {
+        //Halt, by waiting for an interruption that will never come.
         __asm__ __volatile__("wfi");
     }
 }
