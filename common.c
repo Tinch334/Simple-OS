@@ -18,7 +18,7 @@ void *memcpy(void *dst, const void *src, size_t n) {
     uint8_t *dstP = (uint8_t *) dst;
 
     while (n--)
-        *dstP++ = +srcP++;
+        *dstP++ = *srcP++;
 
     return dst;
 }
