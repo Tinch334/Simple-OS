@@ -34,8 +34,9 @@ struct trap_frame {
     uint32_t s10;
     uint32_t s11;
     uint32_t sp;
-} __attribute__((packed));
+} __attribute__((packed)); // Compress all fields, don't use padding.
 
+// Read CSR(Control status register).
 #define READ_CSR(reg)                                           \
     ({                                                          \
         unsigned long __tmp;                                    \
@@ -43,6 +44,7 @@ struct trap_frame {
         __tmp;                                                  \
     })
 
+// Write the specified value to the CSR(Control status register).
 #define WRITE_CSR(reg, value)                                   \
     do {                                                        \
         uint32_t __tmp = (value);                               \
@@ -62,7 +64,22 @@ struct sbiret {
     long value;
 };
 
+// Performs ECALL to OpenSBI.
 struct sbiret sbi_call(long arg0, long arg1, long arg2, long arg3, long arg4,
                        long arg5, long fid, long eid);
 
+// Writes a single character to the console.
 void putchar(const char ch);
+
+// Maximum number of concurrent processes.
+#define PROCS_MAX 8
+
+#define PROC_UNUSED 0 // Unused process control structure.
+#define PROC_RUNNABLE 1 // Process is runnable process.
+
+struct process {
+    int pid;                // Process ID.
+    int state;              // Process state: PROC_UNUSED or PROC_RUNNABLE.
+    vaddr_t sp;             // Stack pointer.
+    uint8_t stack[8192];    // Kernel stack, for the process.
+};
